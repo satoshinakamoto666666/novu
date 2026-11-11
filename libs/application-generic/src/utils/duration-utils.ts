@@ -1,7 +1,29 @@
 export class DurationUtils {
   static isISO8601(value: string): boolean {
-    const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z?$/;
-    if (!iso8601Regex.test(value)) {
+    const iso8601Regex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d{1,3})?Z?$/;
+    const match = iso8601Regex.exec(value);
+    if (!match) {
+      return false;
+    }
+
+    const [, yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr] = match;
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+    const day = Number(dayStr);
+    const hour = Number(hourStr);
+    const minute = Number(minuteStr);
+    const second = Number(secondStr);
+
+    const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+    if (
+      Number.isNaN(utcDate.getTime()) ||
+      utcDate.getUTCFullYear() !== year ||
+      utcDate.getUTCMonth() + 1 !== month ||
+      utcDate.getUTCDate() !== day ||
+      utcDate.getUTCHours() !== hour ||
+      utcDate.getUTCMinutes() !== minute ||
+      utcDate.getUTCSeconds() !== second
+    ) {
       return false;
     }
 
